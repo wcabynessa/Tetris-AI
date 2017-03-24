@@ -3,7 +3,9 @@ import java.util.*;
 public class GeneticAlgorithm {
 
 	public static void main(String[] args) {
-
+		for (double i: GeneticAlgorithm.GeneticSearch()) {
+			System.out.println(i);
+		}
 	}
 
 	private static double[] GeneticSearch() {
@@ -11,9 +13,48 @@ public class GeneticAlgorithm {
 		for (int i = 0; i < Constant.POPULATION_SIZE; i++) {
 			population[i] = new Person();
 		}
+		HashSet<Integer> positionSet;
+		Vector<Integer> positions;
+
+		for (int iteration = 0; iteration < Constant.NUMB_ITERATIONS; iteration++) {
+			Arrays.sort(population);
+			positionSet = new HashSet<Integer>();
+			positions = new Vector<Integer>();	
+			while (positionSet.size() < 2 * Constant.PERCENTAGE_CROSS_OVER * Constant.POPULATION_SIZE / 100) {
+				int position = randomInt(Constant.POPULATION_SIZE);
+				if (!positionSet.contains(position)) {
+					positions.add(position);
+					positionSet.add(position);
+				}
+			}
+
+			for (int i = 0; i < Constant.PERCENTAGE_CROSS_OVER * Constant.POPULATION_SIZE / 100; i++) {
+				int position = randomInt(Constant.NUMB_FEATURES);
+				population[positions.get(2 * i)].crossOver(population[positions.get(2 * i + 1)], position);
+			}
+
+			positionSet = new HashSet<Integer>();
+			positions = new Vector<Integer>();
+			while (positionSet.size() < Constant.PERCENTAGE_MUTATION * Constant.POPULATION_SIZE / 100) {
+				int position = randomInt(Constant.POPULATION_SIZE);
+				if (!positionSet.contains(position)) {
+					positions.add(position);
+					positionSet.add(position);
+				}
+			}
+
+			for (int i = 0; i < Constant.PERCENTAGE_MUTATION * Constant.POPULATION_SIZE / 100; i++) {
+				int position = randomInt(Constant.NUMB_FEATURES);
+				population[positions.get(i)].mutate(position);
+			}
+		}
+
 		return population[0].weights;
 	}
 
+	public static int randomInt(int max) {
+		return (int) (Math.random() * max);
+	}
 }
 
 class Person implements Comparable<Person> {
@@ -36,19 +77,17 @@ class Person implements Comparable<Person> {
 		// TODO
 	}
 
-	private static void crossOver(Person a, Person b) {
-		int crossOverLocation = Util.randomInt(Constant.NUMB_FEATURES);
+	public void crossOver(Person other, int crossOverLocation) {
 		for (int i = 0; i < crossOverLocation; i++) {
-			double tmp = a.weights[i];
-			a.weights[i] = b.weights[i];
-			b.weights[i] = tmp;
+			double tmp = this.weights[i];
+			this.weights[i] = other.weights[i];
+			other.weights[i] = tmp;
 		}
-		a.updateFitness();
-		b.updateFitness();
+		this.updateFitness();
+		other.updateFitness();
 	}
 
-	private void mutate() {
-		int mutateLocation = Util.randomInt(Constant.NUMB_FEATURES);
+	public void mutate(int mutateLocation) {
 		weights[mutateLocation] = Math.random();
 		updateFitness();
 	}
