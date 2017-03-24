@@ -23,10 +23,10 @@ public class State {
 	private int cleared = 0;
 	
 	//each square in the grid - int means empty - other values mean the turn it was placed
-	private int[][] field = new int[ROWS][COLS];
+	protected int[][] field = new int[ROWS][COLS];
 	//top row+1 of each column
 	//0 means empty
-	private int[] top = new int[COLS];
+	protected int[] top = new int[COLS];
 	
 	
 	//number of next piece
