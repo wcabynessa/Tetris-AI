@@ -22,11 +22,13 @@ public class PlayerThread extends Thread {
         int rowsCleared = newState.getRowsCleared() - oldState.getRowsCleared();
         int numHoles = newState.getNumHoles();
         int bumpiness = newState.getBumpiness();
+        int highestCol = newState.getHighestColumn();
 
         double utility = weights[Constant.AGGREGATE_HEIGHT] * aggregateHeight
                         + weights[Constant.ROW_ELIMINATED] * rowsCleared
                         + weights[Constant.NUM_HOLES] * numHoles
-                        + weights[Constant.BUMBINESS] * bumpiness;
+                        + weights[Constant.BUMBINESS] * bumpiness
+                        + weights[Constant.HIGHEST_COL] * highestCol;
         return utility;
     }
 

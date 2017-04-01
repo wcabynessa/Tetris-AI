@@ -8,6 +8,7 @@ public class AdvancedState extends State {
     private static int aggregateHeight = 0;
     private static int numHoles = 0;
     private static int bumpiness = 0;
+    private static int highestCol = 0;
     private static int randomSeed;
     private Random rand;
 
@@ -41,6 +42,14 @@ public class AdvancedState extends State {
             bumpiness += Math.abs(top[i] - top[i + 1]);
         }
         return bumpiness;
+    }
+
+    public int getHighestColumn() {
+        highestCol = 0;
+        for (int i = 0;  i < COLS - 1;  i++) {
+            highestCol = Math.max(highestCol, top[i]);
+        }
+        return highestCol;
     }
 
     @Override
