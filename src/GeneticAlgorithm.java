@@ -1,3 +1,5 @@
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
@@ -15,6 +17,26 @@ public class GeneticAlgorithm {
 		}
 	}
 
+    private static void saveToFile() {
+        try {
+            PrintWriter out = new PrintWriter(new FileOutputStream("output.txt"));
+            out.println("Best value: " + population.get(0).getFitness());
+            out.println("Worst value: " + population.get(population.size() - 1).getFitness());
+            int index = 0;
+            for (Person p : population) {
+                double[] weights = population.get(index).weights;
+                for (double w : weights) {
+                    out.print(w + " ");
+                }
+                out.println();
+                index++;
+            }
+            out.close();
+        } catch (Exception e) {
+            System.out.println("Couldn't save file");
+        }
+    }
+
 	private static double[] GeneticSearch() {
         InitializePopulation();
 
@@ -30,6 +52,11 @@ public class GeneticAlgorithm {
                 System.out.print(i + " ");
             }
             System.out.println();
+
+            // Save to file every 100 iterations
+            if (iteration % 100 == 0) {
+                saveToFile();
+            }
         }
 
 		return population.get(0).weights;
