@@ -1,3 +1,5 @@
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -11,11 +13,13 @@ public class TestWeights {
         int rowsCleared = newState.getRowsCleared() - oldState.getRowsCleared();
         int numHoles = newState.getNumHoles();
         int bumpiness = newState.getBumpiness();
+        int highestCol = newState.getHighestColumn();
 
         double utility = weights[Constant.AGGREGATE_HEIGHT] * aggregateHeight
                         + weights[Constant.ROW_ELIMINATED] * rowsCleared
                         + weights[Constant.NUM_HOLES] * numHoles
-                        + weights[Constant.BUMBINESS] * bumpiness;
+                        + weights[Constant.BUMBINESS] * bumpiness
+                        + weights[Constant.HIGHEST_COL] * highestCol;
         return utility;
     }
 
@@ -33,7 +37,7 @@ public class TestWeights {
             AdvancedState cs = state.clone();
             cs.makeMove(move);
 
-            double utility = computeUtility(state, cs);
+            double utility = (cs.hasLost() ? -Double.MAX_VALUE : computeUtility(state, cs));
             //System.out.println("Possible utility: " + utility);
             System.out.println("Possible move: " + cs.getAggregateHeight() + " | " +
                                                     (cs.getRowsCleared() - state.getRowsCleared()) + "|" +
