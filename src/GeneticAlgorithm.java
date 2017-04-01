@@ -8,7 +8,8 @@ public class GeneticAlgorithm {
     public static ArrayList<Person> population;
 
 	public static void main(String[] args) {
-		for (double i: GeneticAlgorithm.GeneticSearch()) {
+        System.out.println("#------------------- Starting Genetic Algorithm --------------------#");
+		for (double i : GeneticSearch()) {
 			System.out.println(i);
 		}
 	}
@@ -17,9 +18,11 @@ public class GeneticAlgorithm {
         InitializePopulation();
 
 		for (int iteration = 0; iteration < Constant.NUMB_ITERATIONS; iteration++) {
-			refinePopulation();
+            System.out.println("#------------------- Starting Iteration # + " + iteration + "-----------------------#");
             expandPopulationByCrossOver();
             expandPopulationByMutation();
+			refinePopulation();
+            System.out.println("# Current best value: " + population.get(0).getFitness());
 		}
 
 		return population.get(0).weights;
@@ -163,6 +166,10 @@ class Person implements Comparable<Person> {
 
     public double[] getWeights() {
         return weights;
+    }
+
+    public AtomicInteger getFitness() {
+        return this.fitness;
     }
 
     public Person clone() {
