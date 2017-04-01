@@ -26,7 +26,7 @@ public class AdvancedState extends State {
         for (int i = 0; i < COLS; i++) {
             if (top[i] != 0) {
                 for (int j = 0; j < top[i]; j++) {
-                    if (field[j][i] != 0) {
+                    if (field[j][i] == 0) {
                         numHoles++;
                     }
                 }
@@ -37,7 +37,7 @@ public class AdvancedState extends State {
     
     public int getBumpiness() {
         bumpiness = 0;
-        for (int i = 0; i < COLS - 1; i++) {
+        for (int i = 0; i < COLS - 2; i++) {
             bumpiness += Math.abs(top[i] - top[i + 1]);
         }
         return bumpiness;

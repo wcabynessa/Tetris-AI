@@ -150,9 +150,16 @@ class Person implements Comparable<Person> {
         return child;
 	}
 
+    /**
+     * Mutate a given person with delta in range [-0.2, 0.2]
+     */
 	public static Person mutate(Person self, int mutateLocation) {
         double[] weights = Arrays.copyOf(self.weights, self.weights.length);
-		weights[mutateLocation] = randomReal();
+        if (Math.random() < 0.5) {
+            weights[mutateLocation] -= Math.random() / 5;
+        } else {
+            weights[mutateLocation] += Math.random() / 5;
+        }
         Person child = new Person(weights);
         child.updateFitness();
         return child;
