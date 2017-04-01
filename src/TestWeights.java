@@ -50,10 +50,14 @@ public class TestWeights {
 	
 
 	public static void main(String[] args) {
-        for (int i = 0;  i < args.length;  i++) {
+        for (int i = 0;  i < Math.min(args.length, Constant.NUMB_FEATURES);  i++) {
             weights[i] = Double.parseDouble(args[i]);
         }
 		AdvancedState s = new AdvancedState((new Random()).nextLong());
+        if (args.length > Constant.NUMB_FEATURES) {
+            long randomSeed = Long.parseLong(args[args.length - 1]);
+            s = new AdvancedState(randomSeed);
+        }
         State.initializeLegalMoves();
 		new TFrame(s);
         Scanner sc = new Scanner(System.in);
