@@ -39,7 +39,7 @@ public class PlayerThread extends Thread {
             AdvancedState cs = state.clone();
             cs.makeMove(move);
 
-            double utility = computeUtility(state, cs);
+            double utility = (cs.hasLost() ? -Double.MAX_VALUE : computeUtility(state, cs));
             if (utility > bestUtility) {
                 bestUtility = utility;
                 bestMove = move;
