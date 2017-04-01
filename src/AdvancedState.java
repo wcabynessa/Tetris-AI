@@ -12,8 +12,8 @@ public class AdvancedState extends State {
     private Random rand;
 
     public AdvancedState(long randomSeed) {
-        super();
-        rand = new Random(randomSeed);
+        this.rand = new Random(randomSeed);
+        this.nextPiece = randomPiece();
     }
     
     public int getAggregateHeight() {
@@ -45,13 +45,18 @@ public class AdvancedState extends State {
 
     @Override
     protected int randomPiece() {
-        return (int)(rand.nextDouble() * N_PIECES);
+        if (this.rand == null) {
+            return (int)(Math.random() * N_PIECES);
+        }
+        return (int)(this.rand.nextDouble() * N_PIECES);
     }
 
     public int[][] copy2DArray(int[][] arr) {
         int[][] copy = new int[arr.length][arr[0].length];
         for (int i = 0;  i < arr.length;  i++) {
-            copy[i] = Arrays.copyOf(arr[i], arr[i].length);
+            for (int j = 0;  j < arr[i].length;  j++) {
+                copy[i][j] = arr[i][j];
+            }
         }
         return copy;
     }

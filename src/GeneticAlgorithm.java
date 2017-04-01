@@ -9,6 +9,7 @@ public class GeneticAlgorithm {
 
 	public static void main(String[] args) {
         System.out.println("#------------------- Starting Genetic Algorithm --------------------#");
+        State.initializeLegalMoves();
 		for (double i : GeneticSearch()) {
 			System.out.println(i);
 		}
@@ -17,15 +18,16 @@ public class GeneticAlgorithm {
 	private static double[] GeneticSearch() {
         InitializePopulation();
 
-		for (int iteration = 0; iteration < Constant.NUMB_ITERATIONS; iteration++) {
+        for (int iteration = 0; iteration < Constant.NUMB_ITERATIONS; iteration++) {
             System.out.println("#------------------- Starting Iteration # + " + iteration + "-----------------------#");
             expandPopulationByCrossOver();
             expandPopulationByMutation();
-			refinePopulation();
+            refinePopulation();
             System.out.println("# Current best value: " + population.get(0).getFitness());
-		}
+        }
 
 		return population.get(0).weights;
+
 	}
 
 
@@ -112,6 +114,7 @@ class Person implements Comparable<Person> {
 
 	public Person() {
 		this.randomWeightVector();
+        this.updateFitness();
 	}
 
     public Person(double[] weights) {
@@ -121,12 +124,11 @@ class Person implements Comparable<Person> {
 	private void randomWeightVector() {
 		weights = new double[Constant.NUMB_FEATURES];
 		for (int i = 0; i < Constant.NUMB_FEATURES; i++) {
-			weights[i] = Math.random();
+			weights[i] = randomReal();
 		}
 	}
 
 	public void updateFitness() {
-        double meanFitness = 0;
         ThreadController threadMaster = ThreadController.getInstance();
 
         for (int i = 0;  i < Constant.NUMB_GAMES_PER_UPDATE;  i++) {
@@ -150,7 +152,7 @@ class Person implements Comparable<Person> {
 
 	public static Person mutate(Person self, int mutateLocation) {
         double[] weights = Arrays.copyOf(self.weights, self.weights.length);
-		weights[mutateLocation] = Math.random();
+		weights[mutateLocation] = randomReal();
         Person child = new Person(weights);
         child.updateFitness();
         return child;
@@ -166,6 +168,14 @@ class Person implements Comparable<Person> {
 
     public double[] getWeights() {
         return weights;
+    }
+
+    public static double randomReal() {
+        if (Math.random() < 0.5) {
+            return Math.random();
+        } else {
+            return -Math.random();
+        }
     }
 
     public AtomicInteger getFitness() {

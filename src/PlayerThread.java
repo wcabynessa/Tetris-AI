@@ -33,20 +33,16 @@ public class PlayerThread extends Thread {
 	//implement this function to have a working system
 	private int pickMove(AdvancedState state, int[][] legalMoves) {
         double bestUtility = Double.MIN_VALUE;
-        int bestMove = -1;
+        int bestMove = 0;
 
-        int moveIndex = 0;
-        for (int i = 0;  i < legalMoves.length;  i++) {
-            for (int j = 0;  j < legalMoves[i].length;  j++) {
-                AdvancedState cs = state.clone();
-                cs.makeMove(moveIndex);
+        for (int move = 0;  move < legalMoves.length;  move++) {
+            AdvancedState cs = state.clone();
+            cs.makeMove(move);
 
-                double utility = computeUtility(state, cs);
-                if (utility > bestUtility) {
-                    bestUtility = utility;
-                    bestMove = moveIndex;
-                }
-                moveIndex++;
+            double utility = computeUtility(state, cs);
+            if (utility > bestUtility) {
+                bestUtility = utility;
+                bestMove = move;
             }
         }
         return bestMove;
@@ -71,22 +67,22 @@ public class PlayerThread extends Thread {
 	}*/
 
     public void run() {
-        AdvancedState s = new AdvancedState(randomSeed);
-        while (!s.hasLost()) {
-            s.makeMove(pickMove(s, s.legalMoves()));
-            totalRowsCleared = s.getRowsCleared();
-        }
+
         try {
+            AdvancedState s = new AdvancedState(randomSeed);
+            while (!s.hasLost()) {
+                s.makeMove(pickMove(s, s.legalMoves()));
+                totalRowsCleared = s.getRowsCleared();
+            }
             valueToUpdate.updateValue(totalRowsCleared);
         } catch (Exception e) {
             System.out.println("ERROR: Thread failed to update fitness value");
+            e.printStackTrace();
             System.exit(1);
         }
     }
 
     public void start() {
-        System.out.print("Starting thread: " + threadName);
-
         if (thread == null) {
             thread = new Thread(this, threadName);
             thread.start();

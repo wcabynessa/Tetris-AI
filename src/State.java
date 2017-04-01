@@ -11,6 +11,11 @@ public class State {
 	
 
 	public boolean lost = false;
+
+    public int currentMove;
+    public int currentOrient;
+    public int currentPiece;
+    public int currentSlot;
 	
 	
 	
@@ -36,6 +41,7 @@ public class State {
 	
 	//all legal moves - first index is piece type - then a list of 2-length arrays
 	protected static int[][][] legalMoves = new int[N_PIECES][][];
+    protected static boolean legalMovesInitialized = false;
 	
 	//indices for legalMoves
 	public static final int ORIENT = 0;
@@ -84,32 +90,6 @@ public class State {
 		{{2,2,1},{2,3}}
 	};
 	
-	//initialize legalMoves
-	{
-		//for each piece type
-		for(int i = 0; i < N_PIECES; i++) {
-			//figure number of legal moves
-			int n = 0;
-			for(int j = 0; j < pOrients[i]; j++) {
-				//number of locations in this orientation
-				n += COLS+1-pWidth[i][j];
-			}
-			//allocate space
-			legalMoves[i] = new int[n][2];
-			//for each orientation
-			n = 0;
-			for(int j = 0; j < pOrients[i]; j++) {
-				//for each slot
-				for(int k = 0; k < COLS+1-pWidth[i][j];k++) {
-					legalMoves[i][n][ORIENT] = j;
-					legalMoves[i][n][SLOT] = k;
-					n++;
-				}
-			}
-		}
-	
-	}
-	
 	
 	public int[][] getField() {
 		return field;
@@ -156,12 +136,35 @@ public class State {
 		return turn;
 	}
 	
+    // This should be initialized only once;
+    public static void initializeLegalMoves() {
+        //for each piece type
+        for(int i = 0; i < N_PIECES; i++) {
+            //figure number of legal moves
+            int n = 0;
+            for(int j = 0; j < pOrients[i]; j++) {
+                //number of locations in this orientation
+                n += COLS+1-pWidth[i][j];
+            }
+            //allocate space
+            legalMoves[i] = new int[n][2];
+            //for each orientation
+            n = 0;
+            for(int j = 0; j < pOrients[i]; j++) {
+                //for each slot
+                for(int k = 0; k < COLS+1-pWidth[i][j];k++) {
+                    legalMoves[i][n][ORIENT] = j;
+                    legalMoves[i][n][SLOT] = k;
+                    n++;
+                }
+            }
+        }
+    }
 	
 	
 	//constructor
 	public State() {
 		nextPiece = randomPiece();
-
 	}
 	
 	//random integer, returns 0-6
@@ -179,11 +182,15 @@ public class State {
 	
 	//make a move based on the move index - its order in the legalMoves list
 	public void makeMove(int move) {
+        this.currentMove = move;
+        this.currentPiece = nextPiece;
 		makeMove(legalMoves[nextPiece][move]);
 	}
 	
 	//make a move based on an array of orient and slot
 	public void makeMove(int[] move) {
+        currentOrient = move[ORIENT];
+        currentSlot = move[SLOT];
 		makeMove(move[ORIENT],move[SLOT]);
 	}
 	
