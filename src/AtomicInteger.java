@@ -13,7 +13,7 @@ public class AtomicInteger {
 
     public int getValue() {
         int sum = 0;
-        for (Integer value : values) {
+        for (int value : values) {
             sum += value;
         }
         return sum / values.size();
