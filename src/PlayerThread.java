@@ -32,7 +32,7 @@ public class PlayerThread extends Thread {
 
 	//implement this function to have a working system
 	private int pickMove(AdvancedState state, int[][] legalMoves) {
-        double bestUtility = Double.MIN_VALUE;
+        double bestUtility = -Double.MAX_VALUE;
         int bestMove = 0;
 
         for (int move = 0;  move < legalMoves.length;  move++) {
