@@ -24,6 +24,7 @@ public class GeneticAlgorithm {
             expandPopulationByMutation();
             refinePopulation();
             System.out.println("# Current best value: " + population.get(0).getFitness());
+            System.out.println("# Current min value: " + population.get(population.size() - 1).getFitness());
             double[] weights = population.get(0).weights;
             for (double i : weights) {
                 System.out.print(i + " ");
