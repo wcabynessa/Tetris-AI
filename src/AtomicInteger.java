@@ -19,4 +19,9 @@ public class AtomicInteger {
         value = Math.max(value, newValue);
         sem.release();
     }
+
+    @Override
+    public String toString() {
+        return Integer.toString(value);
+    }
 }
