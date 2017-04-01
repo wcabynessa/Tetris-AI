@@ -10,9 +10,9 @@ public class Constant {
 
     // Indices of features
     public static final int AGGREGATE_HEIGHT = 0;
-    public static final int ROW_ELIMINATED = 0;
-    public static final int NUM_HOLES = 0;
-    public static final int BUMBINESS = 0;
+    public static final int ROW_ELIMINATED = 1;
+    public static final int NUM_HOLES = 2;
+    public static final int BUMBINESS = 3;
 
     // Random seeds must match number of games per update above ^
     public static final long[] SEEDS = {
