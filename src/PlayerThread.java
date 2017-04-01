@@ -1,3 +1,5 @@
+import java.util.concurrent.Callable;
+
 
 public class PlayerThread extends Thread {
 
@@ -5,14 +7,14 @@ public class PlayerThread extends Thread {
     private double[] weights;
     private String threadName;
     private int totalRowsCleared = 0;
-    private Runnable callback;
     private long randomSeed;
+    private AtomicInteger valueToUpdate;
 
-    public PlayerThread(String threadName, long randomSeed, double[] weights, Runnable callback) {
-        this.weights = weights;
+    public PlayerThread(String threadName, long randomSeed, double[] weights, AtomicInteger valueToUpdate) {
         this.threadName = threadName;
-        this.callback = callback;
+        this.weights = weights;
         this.randomSeed = randomSeed;
+        this.valueToUpdate = valueToUpdate;
     }
 
     private double computeUtility(AdvancedState oldState, AdvancedState newState) {
@@ -74,7 +76,12 @@ public class PlayerThread extends Thread {
             s.makeMove(pickMove(s, s.legalMoves()));
             totalRowsCleared = s.getRowsCleared();
         }
-        this.callback.run();
+        try {
+            valueToUpdate.updateValue(totalRowsCleared);
+        } catch (Exception e) {
+            System.out.println("ERROR: Thread failed to update fitness value");
+            System.exit(1);
+        }
     }
 
     public void start() {

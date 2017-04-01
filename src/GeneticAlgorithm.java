@@ -1,6 +1,11 @@
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Semaphore;
+
 
 public class GeneticAlgorithm {
+
+    public static ArrayList<Person> population;
 
 	public static void main(String[] args) {
 		for (double i: GeneticAlgorithm.GeneticSearch()) {
@@ -9,62 +14,106 @@ public class GeneticAlgorithm {
 	}
 
 	private static double[] GeneticSearch() {
-		Person[] population = new Person[Constant.POPULATION_SIZE];
-		for (int i = 0; i < Constant.POPULATION_SIZE; i++) {
-			population[i] = new Person();
-		}
-		HashSet<Integer> positionSet;
-		Vector<Integer> positions;
+        InitializePopulation();
 
 		for (int iteration = 0; iteration < Constant.NUMB_ITERATIONS; iteration++) {
-			Arrays.sort(population);
-			positionSet = new HashSet<Integer>();
-			positions = new Vector<Integer>();	
-			while (positionSet.size() < 2 * Constant.PERCENTAGE_CROSS_OVER * Constant.POPULATION_SIZE / 100) {
-				int position = randomInt(Constant.POPULATION_SIZE);
-				if (!positionSet.contains(position)) {
-					positions.add(position);
-					positionSet.add(position);
-				}
-			}
-
-			for (int i = 0; i < Constant.PERCENTAGE_CROSS_OVER * Constant.POPULATION_SIZE / 100; i++) {
-				int position = randomInt(Constant.NUMB_FEATURES);
-				population[positions.get(2 * i)].crossOver(population[positions.get(2 * i + 1)], position);
-			}
-
-			positionSet = new HashSet<Integer>();
-			positions = new Vector<Integer>();
-			while (positionSet.size() < Constant.PERCENTAGE_MUTATION * Constant.POPULATION_SIZE / 100) {
-				int position = randomInt(Constant.POPULATION_SIZE);
-				if (!positionSet.contains(position)) {
-					positions.add(position);
-					positionSet.add(position);
-				}
-			}
-
-			for (int i = 0; i < Constant.PERCENTAGE_MUTATION * Constant.POPULATION_SIZE / 100; i++) {
-				int position = randomInt(Constant.NUMB_FEATURES);
-				population[positions.get(i)].mutate(position);
-			}
+			refinePopulation();
+            expandPopulationByCrossOver();
+            expandPopulationByMutation();
 		}
 
-		return population[0].weights;
+		return population.get(0).weights;
 	}
+
+
+    /** Generate POPULATION_SIZE persons. */
+    private static void InitializePopulation() {
+		population = new ArrayList<Person>();
+		for (int i = 0;  i < Constant.POPULATION_SIZE;  i++) {
+			population.add(new Person());
+		}
+
+        // Wait until all persons finish updating fitness
+        ThreadController threadMaster = ThreadController.getInstance();
+        threadMaster.waitFinishUpdate();
+    }
+
+
+    /** Only keep POPULATION_SIZE persons with highest fitness */
+    private static void refinePopulation() {
+        Collections.sort(population);
+        while (population.size() > Constant.POPULATION_SIZE) {
+            population.remove(population.size() - 1);
+        }
+    }
+
+
+    private static void expandPopulationByCrossOver() {
+        Vector subjects = new Vector<Integer>();	
+        while (subjects.size() < Constant.PERCENTAGE_CROSS_OVER * Constant.POPULATION_SIZE / 100) {
+            int subject = randomInt(Constant.POPULATION_SIZE);
+            if (!subjects.contains(subject)) {
+                subjects.add(subject);
+            }
+        }
+
+        for (int i = 0;  i < subjects.size();  i++) {
+            int subject1 = randomInt(subjects.size());
+            int subject2 = randomInt(subjects.size());
+            int featureIndex = randomInt(Constant.NUMB_FEATURES);
+
+            population.add(Person.crossOver(population.get(subject1), population.get(subject2), featureIndex));
+        }
+
+        // Wait until all persons finish updating fitness
+        ThreadController threadMaster = ThreadController.getInstance();
+        threadMaster.waitFinishUpdate();
+    }
+
+
+    private static void expandPopulationByMutation() {
+        Vector subjects = new Vector<Integer>();	
+        while (subjects.size() < Constant.PERCENTAGE_MUTATION * Constant.POPULATION_SIZE / 100) {
+            int subject = randomInt(Constant.POPULATION_SIZE);
+            if (!subjects.contains(subject)) {
+                subjects.add(subject);
+            }
+        }
+
+        for (int i = 0;  i < subjects.size();  i++) {
+            int subject = randomInt(subjects.size());
+            int featureIndex = randomInt(Constant.NUMB_FEATURES);
+
+            population.add(Person.mutate(population.get(subject), featureIndex));
+        }
+
+        // Wait until all persons finish updating fitness
+        ThreadController threadMaster = ThreadController.getInstance();
+        threadMaster.waitFinishUpdate();
+    }
 
 	public static int randomInt(int max) {
 		return (int) (Math.random() * max);
 	}
 }
 
+
+/**
+ * Represents a person in population.
+ *
+ * Remember to manually udpate fitness value before use.
+ */
 class Person implements Comparable<Person> {
 	public double[] weights;
-	private int fitness;
+	private AtomicInteger fitness = new AtomicInteger(0);
 
 	public Person() {
 		this.randomWeightVector();
-		this.updateFitness();
 	}
+
+    public Person(double[] weights) {
+        this.weights = weights;
+    }
 
 	private void randomWeightVector() {
 		weights = new double[Constant.NUMB_FEATURES];
@@ -73,27 +122,59 @@ class Person implements Comparable<Person> {
 		}
 	}
 
-	private void updateFitness() {
-		// TODO
-	}
+	public void updateFitness() {
+        double meanFitness = 0;
+        ThreadController threadMaster = ThreadController.getInstance();
 
-	public void crossOver(Person other, int crossOverLocation) {
+        for (int i = 0;  i < Constant.NUMB_GAMES_PER_UPDATE;  i++) {
+            long randomSeed = Constant.SEEDS[i];
+            String threadName = this.toString() + " #" + i;
+
+            PlayerThread game = new PlayerThread(threadName, randomSeed, weights, fitness);
+            threadMaster.submitTask(game);
+        }
+    }
+
+	public static Person crossOver(Person self, Person other, int crossOverLocation) {
+        double[] weights = Arrays.copyOf(self.weights, self.weights.length);
 		for (int i = 0; i < crossOverLocation; i++) {
-			double tmp = this.weights[i];
-			this.weights[i] = other.weights[i];
-			other.weights[i] = tmp;
+            weights[i] = other.weights[i];
 		}
-		this.updateFitness();
-		other.updateFitness();
+        Person child = new Person(weights);
+        child.updateFitness();
+        return child;
 	}
 
-	public void mutate(int mutateLocation) {
+	public static Person mutate(Person self, int mutateLocation) {
+        double[] weights = Arrays.copyOf(self.weights, self.weights.length);
 		weights[mutateLocation] = Math.random();
-		updateFitness();
+        Person child = new Person(weights);
+        child.updateFitness();
+        return child;
 	}
 
 	public int compareTo(Person other) {
-		return other.fitness - this.fitness;
+		return other.fitness.getValue() - this.fitness.getValue();
 	}
+
+    public void setWeights(double[] weights) {
+        this.weights = weights;
+    }
+
+    public double[] getWeights() {
+        return weights;
+    }
+
+    public Person clone() {
+        return new Person(Arrays.copyOf(weights, weights.length));
+    }
+
+    public String toString() {
+        String text = "";
+        for (double weight : weights) {
+            text += "|" + weight;
+        }
+        return text;
+    }
 
 }
