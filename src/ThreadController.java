@@ -22,7 +22,7 @@ public class ThreadController {
                                             new LinkedBlockingQueue<Runnable>());
     }
 
-    public ThreadController getInstance() {
+    public static ThreadController getInstance() {
         return INSTANCE;
     }
 
@@ -30,7 +30,7 @@ public class ThreadController {
         executor.execute(thread);
     }
 
-    public void awaitFinish() {
+    public void waitFinishUpdate() {
         try {
             executor.awaitTermination(Integer.MAX_VALUE, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
