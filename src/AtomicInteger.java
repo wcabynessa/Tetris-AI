@@ -1,27 +1,32 @@
 import java.util.concurrent.Semaphore;
+import java.util.stream.IntStream;
+import java.util.ArrayList;
 
 
 public class AtomicInteger {
 
     private Semaphore sem = new Semaphore(1);
-    private int value;
+    private ArrayList<Integer> values = new ArrayList<Integer>();
 
     public AtomicInteger(int value) {
-        this.value = value;
     }
 
     public int getValue() {
-        return value;
+        int sum = 0;
+        for (Integer value : values) {
+            sum += value;
+        }
+        return sum / values.size();
     }
 
     public void updateValue(int newValue) throws InterruptedException {
         sem.acquire();
-        value = Math.max(value, newValue);
+        values.add(newValue);
         sem.release();
     }
 
     @Override
     public String toString() {
-        return Integer.toString(value);
+        return Integer.toString(getValue());
     }
 }
