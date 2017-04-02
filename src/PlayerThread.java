@@ -23,12 +23,14 @@ public class PlayerThread extends Thread {
         int numHoles = newState.getNumHoles();
         int bumpiness = newState.getBumpiness();
         int highestCol = newState.getHighestColumn();
+        int wellSum = newState.getWellSum();
 
         double utility = weights[Constant.AGGREGATE_HEIGHT] * aggregateHeight
                         + weights[Constant.ROW_ELIMINATED] * rowsCleared
                         + weights[Constant.NUM_HOLES] * numHoles
                         + weights[Constant.BUMBINESS] * bumpiness
-                        + weights[Constant.HIGHEST_COL] * highestCol;
+                        + weights[Constant.HIGHEST_COL] * highestCol
+                        + weights[Constant.WELL_SUM] * wellSum;
         return utility;
     }
 

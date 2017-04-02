@@ -9,6 +9,7 @@ public class AdvancedState extends State {
     private static int numHoles = 0;
     private static int bumpiness = 0;
     private static int highestCol = 0;
+    private static int wellSum = 0;
     private static int randomSeed;
     private Random rand;
 
@@ -26,9 +27,13 @@ public class AdvancedState extends State {
         numHoles = 0;
         for (int i = 0; i < COLS; i++) {
             if (top[i] != 0) {
+                int consecutive = 0;
                 for (int j = 0; j < top[i]; j++) {
                     if (field[j][i] == 0) {
-                        numHoles++;
+                        consecutive++;
+                        numHoles += consecutive;
+                    } else {
+                        consecutive = 0;
                     }
                 }
             }
@@ -50,6 +55,19 @@ public class AdvancedState extends State {
             highestCol = Math.max(highestCol, top[i]);
         }
         return highestCol;
+    }
+
+    public int getWellSum() {
+        int prev, next;
+        wellSum = 0;
+        for (int i = 0;  i < COLS - 1;  i++) {
+            next = (i == COLS - 1 ? ROWS : top[i + 1]);
+            prev = (i == 0        ? ROWS : top[i - 1]);
+            if (top[i] < Math.min(next, prev)) {
+                wellSum += Math.min(next, prev) - top[i];
+            }
+        }
+        return wellSum;
     }
 
     @Override

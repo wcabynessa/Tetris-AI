@@ -14,12 +14,14 @@ public class TestWeights {
         int numHoles = newState.getNumHoles();
         int bumpiness = newState.getBumpiness();
         int highestCol = newState.getHighestColumn();
+        int wellSum = newState.getWellSum();
 
         double utility = weights[Constant.AGGREGATE_HEIGHT] * aggregateHeight
                         + weights[Constant.ROW_ELIMINATED] * rowsCleared
                         + weights[Constant.NUM_HOLES] * numHoles
                         + weights[Constant.BUMBINESS] * bumpiness
-                        + weights[Constant.HIGHEST_COL] * highestCol;
+                        + weights[Constant.HIGHEST_COL] * highestCol
+                        + weights[Constant.WELL_SUM] * wellSum;
         return utility;
     }
 
@@ -71,7 +73,7 @@ public class TestWeights {
 			s.drawNext(0,0);
 			try {
                 //sc.next();
-				Thread.sleep(10);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
