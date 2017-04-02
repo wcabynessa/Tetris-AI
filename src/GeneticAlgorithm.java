@@ -45,6 +45,8 @@ public class GeneticAlgorithm {
             expandPopulationByCrossOver();
             expandPopulationByMutation();
             refinePopulation();
+
+            // Logging
             System.out.println("# Current best value: " + population.get(0).getFitness());
             System.out.println("# Current min value: " + population.get(population.size() - 1).getFitness());
             double[] weights = population.get(0).weights;
@@ -98,9 +100,7 @@ public class GeneticAlgorithm {
         for (int i = 0;  i < subjects.size();  i++) {
             int subject1 = randomInt(subjects.size());
             int subject2 = randomInt(subjects.size());
-            int featureIndex = randomInt(Constant.NUMB_FEATURES);
-
-            population.add(Person.crossOver(population.get(subject1), population.get(subject2), featureIndex));
+            population.add(Person.crossOver(population.get(subject1), population.get(subject2)));
         }
 
         // Wait until all persons finish updating fitness
@@ -173,11 +173,16 @@ class Person implements Comparable<Person> {
         }
     }
 
-	public static Person crossOver(Person self, Person other, int crossOverLocation) {
+    /**
+     * Uniform cross-over
+     */
+	public static Person crossOver(Person self, Person other) {
         double[] weights = Arrays.copyOf(self.weights, self.weights.length);
-		for (int i = 0; i < crossOverLocation; i++) {
-            weights[i] = other.weights[i];
-		}
+        for (int i = 0;  i < weights.length;  i++) {
+            if (Math.random() < 0.5) {
+                weights[i] = other.weights[i];
+            }
+        }
         Person child = new Person(weights);
         child.updateFitness();
         return child;
