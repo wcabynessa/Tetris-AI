@@ -29,7 +29,7 @@ public class GeneticAlgorithm {
                     out.print(w + " ");
                 }
                 out.println();
-                index++;
+		break;  // Only print one
             }
             out.close();
         } catch (Exception e) {
