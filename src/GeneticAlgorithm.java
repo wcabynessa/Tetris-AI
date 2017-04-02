@@ -55,10 +55,7 @@ public class GeneticAlgorithm {
             }
             System.out.println();
 
-            // Save to file every 100 iterations
-            if (iteration % 100 == 0) {
-                saveToFile();
-            }
+            saveToFile();
         }
 
 		return population.get(0).weights;
