@@ -43,7 +43,7 @@ public class AdvancedState extends State {
     
     public int getBumpiness() {
         bumpiness = 0;
-        for (int i = 0; i < COLS - 2; i++) {
+        for (int i = 0; i < COLS - 1; i++) {
             bumpiness += Math.abs(top[i] - top[i + 1]);
         }
         return bumpiness;
@@ -51,7 +51,7 @@ public class AdvancedState extends State {
 
     public int getHighestColumn() {
         highestCol = 0;
-        for (int i = 0;  i < COLS - 1;  i++) {
+        for (int i = 0;  i < COLS;  i++) {
             highestCol = Math.max(highestCol, top[i]);
         }
         return highestCol;
@@ -60,7 +60,7 @@ public class AdvancedState extends State {
     public int getWellSum() {
         int prev, next;
         wellSum = 0;
-        for (int i = 0;  i < COLS - 1;  i++) {
+        for (int i = 0;  i < COLS;  i++) {
             next = (i == COLS - 1 ? ROWS : top[i + 1]);
             prev = (i == 0        ? ROWS : top[i - 1]);
             if (top[i] < Math.min(next, prev)) {
