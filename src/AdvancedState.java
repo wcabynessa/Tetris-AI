@@ -28,7 +28,7 @@ public class AdvancedState extends State {
         for (int i = 0; i < COLS; i++) {
             if (top[i] != 0) {
                 int consecutive = 0;
-                for (int j = 0; j < top[i]; j++) {
+                for (int j = top[i]; j >= 0; j--) {
                     if (field[j][i] == 0) {
                         consecutive++;
                         numHoles += consecutive;
@@ -38,7 +38,7 @@ public class AdvancedState extends State {
                 }
             }
         }
-        return numHoles;
+        return numHoles * 10;
     }
     
     public int getBumpiness() {
@@ -64,10 +64,11 @@ public class AdvancedState extends State {
             next = (i == COLS - 1 ? ROWS : top[i + 1]);
             prev = (i == 0        ? ROWS : top[i - 1]);
             if (top[i] < Math.min(next, prev)) {
-                wellSum += Math.min(next, prev) - top[i];
+                int wellDepth = Math.min(next, prev) - top[i];
+                wellSum += wellDepth * wellDepth;
             }
         }
-        return wellSum;
+        return wellSum * 5;
     }
 
     @Override
