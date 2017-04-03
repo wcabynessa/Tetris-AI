@@ -9,6 +9,8 @@ public class AdvancedState extends State {
     private static int numHoles = 0;
     private static int bumpiness = 0;
     private static int highestCol = 0;
+    private static int rowTransitions = 0;
+    private static int colTransitions = 0;
     private static int wellSum = 0;
     private static int randomSeed;
     private Random rand;
@@ -25,20 +27,42 @@ public class AdvancedState extends State {
     
     public int getNumHoles() {
         numHoles = 0;
-        for (int i = 0; i < COLS; i++) {
-            if (top[i] != 0) {
-                int consecutive = 0;
-                for (int j = top[i]; j >= 0; j--) {
-                    if (field[j][i] == 0) {
-                        consecutive++;
-                        numHoles += consecutive;
-                    } else {
-                        consecutive = 0;
+        for (int j = 0;  j < COLS;  j++) {
+            if (top[j] != 0) {
+                for (int i = top[j] - 1;  i >= 0;  i--) {
+                    if (field[i][j] == 0) {
+                        numHoles++;
                     }
                 }
             }
         }
         return numHoles * 10;
+    }
+
+    public int getRowTransitions() {
+        rowTransitions = 0;
+        cleanField();
+        for (int i = 0;  i < ROWS;  i++) {
+            for (int j = 1;  j < COLS;  j++) {
+                if ((field[i][j] == 0) != (field[i][j - 1] == 0)) {
+                    rowTransitions++;
+                }
+            }
+        }
+        return rowTransitions;
+    }
+
+    public int getColTransitions() {
+        colTransitions = 0;
+        cleanField();
+        for (int j = 0;  j < COLS;  j++) {
+            for (int i = 0;  i < top[j] - 1;  i++) {
+                if ((field[i][j] == 0) != (field[i + 1][j] == 0)) {
+                    colTransitions++;
+                }
+            }
+        }
+        return colTransitions;
     }
     
     public int getBumpiness() {
@@ -58,17 +82,41 @@ public class AdvancedState extends State {
     }
 
     public int getWellSum() {
-        int prev, next;
+        int next, prev;
         wellSum = 0;
-        for (int i = 0;  i < COLS;  i++) {
-            next = (i == COLS - 1 ? ROWS : top[i + 1]);
-            prev = (i == 0        ? ROWS : top[i - 1]);
-            if (top[i] < Math.min(next, prev)) {
-                int wellDepth = Math.min(next, prev) - top[i];
-                wellSum += wellDepth * wellDepth;
+        cleanField();
+        for (int j = 0;  j < COLS;  j++) {
+            next = (j == COLS - 1 ? ROWS : top[j + 1]);
+            prev = (j == 0 ? ROWS : top[j - 1]);
+            if (top[j] < Math.min(prev, next)) {
+                wellSum += Math.min(prev, next) - top[j];
             }
         }
         return wellSum * 5;
+    }
+
+    public void printTop() {
+        for (int j = 0;  j < COLS;  j++) {
+            System.out.print(top[j] + " - ");
+        }
+        System.out.println();
+    }
+
+    public void printField() {
+        for (int j = 0;  j < COLS;  j++) {
+            for (int i = 0;  i < top[j];  i++) {
+                System.out.print(field[i][j] + " - ");
+            }
+            System.out.println();
+        }
+    }
+
+    public void cleanField() {
+        for (int j = 0;  j < COLS;  j++) {
+            for (int i = top[j];  i < ROWS;  i++) {
+                field[i][j] = 0;
+            }
+        }
     }
 
     @Override
@@ -95,6 +143,7 @@ public class AdvancedState extends State {
         clonedState.field = copy2DArray(getField());
         clonedState.top = Arrays.copyOf(getTop(), getTop().length);
         clonedState.nextPiece = getNextPiece();
+        clonedState.setRowsCleared(getRowsCleared());
         return clonedState;
     }
     

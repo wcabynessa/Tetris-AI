@@ -8,20 +8,36 @@ public class TestWeights {
 
     public static double[] weights = new double[Constant.NUMB_FEATURES];
 
-    private static double computeUtility(AdvancedState oldState, AdvancedState newState) {
-        int aggregateHeight = newState.getAggregateHeight();
-        int rowsCleared = newState.getRowsCleared() - oldState.getRowsCleared();
+    private static double computeUtility(AdvancedState oldState, AdvancedState newState, int move) {
+        // Landing height is the height of the column where the piece is put
+        int piece = oldState.getNextPiece();
+        int orient = oldState.legalMoves()[move][State.ORIENT];
+        int slot = oldState.legalMoves()[move][State.SLOT];
+        int pieceWidth = oldState.pWidth[piece][orient];
+        int landingHeight = Utility.arrayMax(newState.top, slot, slot + pieceWidth);
+
+        int rowsEliminated = newState.getRowsCleared() - oldState.getRowsCleared();
+        int rowTransitions = newState.getRowTransitions();
+        int colTransitions = newState.getColTransitions();
         int numHoles = newState.getNumHoles();
-        int bumpiness = newState.getBumpiness();
-        int highestCol = newState.getHighestColumn();
         int wellSum = newState.getWellSum();
 
-        double utility = weights[Constant.AGGREGATE_HEIGHT] * aggregateHeight
-                        + weights[Constant.ROW_ELIMINATED] * rowsCleared
+        double utility = weights[Constant.LANDING_HEIGHT] * landingHeight
+                        + weights[Constant.ROW_ELIMINATED] * rowsEliminated
+                        + weights[Constant.ROW_TRANSITIONS] * rowTransitions
+                        + weights[Constant.COL_TRANSITIONS] * colTransitions
                         + weights[Constant.NUM_HOLES] * numHoles
-                        + weights[Constant.BUMBINESS] * bumpiness
-                        + weights[Constant.HIGHEST_COL] * highestCol
                         + weights[Constant.WELL_SUM] * wellSum;
+
+        //newState.printTop();
+        //newState.printField();
+        System.out.println("Possible move: " +
+                            landingHeight + " | " +
+                            rowsEliminated + " | " +
+                            rowTransitions + " | " +
+                            colTransitions + " | " +
+                            numHoles + " | " +
+                            wellSum + " | " + utility);
         return utility;
     }
 
@@ -30,27 +46,23 @@ public class TestWeights {
         double bestUtility = -Double.MAX_VALUE;
         int bestMove = 0;
 
-        System.out.println("Current state: " + state.getAggregateHeight() + " | " +
-                                                 state.getRowsCleared() + "|" +
-                                                 state.getNumHoles() + "|" +
-                                                 state.getBumpiness() + " ---> ");
+        System.out.println("rows: " + state.getRowsCleared());
         System.out.println("Start picking moves");
         for (int move = 0;  move < legalMoves.length;  move++) {
             AdvancedState cs = state.clone();
             cs.makeMove(move);
 
-            double utility = (cs.hasLost() ? -Double.MAX_VALUE : computeUtility(state, cs));
+            double utility = (cs.hasLost() ? -Double.MAX_VALUE : computeUtility(state, cs, move));
             //System.out.println("Possible utility: " + utility);
-            System.out.println("Possible move: " + cs.getAggregateHeight() + " | " +
-                                                    (cs.getRowsCleared() - state.getRowsCleared()) + "|" +
-                                                    cs.getNumHoles() + "|" +
-                                                    cs.getBumpiness() + " ---> " + utility);
             if (utility > bestUtility) {
                 bestUtility = utility;
                 bestMove = move;
             }
         }
         System.out.println("Found best move: " + legalMoves[bestMove][0] + " - " + legalMoves[bestMove][1]);
+        AdvancedState cs = state.clone();
+        cs.makeMove(bestMove);
+        computeUtility(state, cs, bestMove);
         return bestMove;
 	}
 	
@@ -72,8 +84,8 @@ public class TestWeights {
 			s.draw();
 			s.drawNext(0,0);
 			try {
-                //sc.next();
-				Thread.sleep(100);
+                //sc.nextLine();
+				Thread.sleep(10);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

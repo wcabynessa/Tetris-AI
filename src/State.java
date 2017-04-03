@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.util.Arrays;
 
 
 
@@ -52,7 +53,7 @@ public class State {
 	
 	//the next several arrays define the piece vocabulary in detail
 	//width of the pieces [piece ID][orientation]
-	protected static int[][] pWidth = {
+	public static int[][] pWidth = {
 			{2},
 			{1,4},
 			{2,3,2,3},
@@ -62,7 +63,7 @@ public class State {
 			{3,2}
 	};
 	//height of the pieces [piece ID][orientation]
-	private static int[][] pHeight = {
+	public static int[][] pHeight = {
 			{2},
 			{4,1},
 			{3,2,3,2},
@@ -132,6 +133,10 @@ public class State {
 		return cleared;
 	}
 	
+	protected void setRowsCleared(int cleared) {
+        this.cleared = cleared;
+	}
+	
 	public int getTurnNumber() {
 		return turn;
 	}
@@ -164,6 +169,10 @@ public class State {
 	
 	//constructor
 	public State() {
+        for (int i = 0;  i < field.length;  i++) {
+            Arrays.fill(field[i], 0);
+        }
+        Arrays.fill(top, 0);
 		nextPiece = randomPiece();
 	}
 	

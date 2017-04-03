@@ -9,11 +9,11 @@ public class Constant {
 	public static final int NUMB_GAMES_PER_UPDATE = 5;
 
     // Indices of features
-    public static final int AGGREGATE_HEIGHT = 0;
+    public static final int LANDING_HEIGHT = 0;
     public static final int ROW_ELIMINATED = 1;
     public static final int NUM_HOLES = 2;
-    public static final int BUMBINESS = 3;
-    public static final int HIGHEST_COL = 4;
+    public static final int ROW_TRANSITIONS = 3;
+    public static final int COL_TRANSITIONS = 4;
     public static final int WELL_SUM = 5;
 
     // Random seeds must match number of games per update above ^

@@ -17,19 +17,28 @@ public class PlayerThread extends Thread {
         this.valueToUpdate = valueToUpdate;
     }
 
-    private double computeUtility(AdvancedState oldState, AdvancedState newState) {
-        int aggregateHeight = newState.getAggregateHeight();
-        int rowsCleared = newState.getRowsCleared() - oldState.getRowsCleared();
+    private double computeUtility(AdvancedState oldState, AdvancedState newState, int move) {
+        // Landing height is the height of the column where the piece is put
+        // Landing height = col height + 1/2 * piece height
+        int piece = oldState.getNextPiece();
+        int orient = oldState.legalMoves()[move][AdvancedState.ORIENT];
+        int slot = oldState.legalMoves()[move][AdvancedState.SLOT];
+        int pieceWidth = oldState.pWidth[piece][orient];
+        int pieceHeight = oldState.pHeight[piece][orient];
+        int colHeight = Utility.arrayMax(oldState.top, slot, slot + pieceWidth);
+        int landingHeight = colHeight + pieceHeight / 2;
+
+        int rowsEliminated = newState.getRowsCleared() - oldState.getRowsCleared();
+        int rowTransitions = newState.getRowTransitions();
+        int colTransitions = newState.getColTransitions();
         int numHoles = newState.getNumHoles();
-        int bumpiness = newState.getBumpiness();
-        int highestCol = newState.getHighestColumn();
         int wellSum = newState.getWellSum();
 
-        double utility = weights[Constant.AGGREGATE_HEIGHT] * aggregateHeight
-                        + weights[Constant.ROW_ELIMINATED] * rowsCleared
+        double utility = weights[Constant.LANDING_HEIGHT] * landingHeight
+                        + weights[Constant.ROW_ELIMINATED] * rowsEliminated
+                        + weights[Constant.ROW_TRANSITIONS] * rowTransitions
+                        + weights[Constant.COL_TRANSITIONS] * colTransitions
                         + weights[Constant.NUM_HOLES] * numHoles
-                        + weights[Constant.BUMBINESS] * bumpiness
-                        + weights[Constant.HIGHEST_COL] * highestCol
                         + weights[Constant.WELL_SUM] * wellSum;
         return utility;
     }
@@ -43,7 +52,7 @@ public class PlayerThread extends Thread {
             AdvancedState cs = state.clone();
             cs.makeMove(move);
 
-            double utility = (cs.hasLost() ? -Double.MAX_VALUE : computeUtility(state, cs));
+            double utility = (cs.hasLost() ? -Double.MAX_VALUE : computeUtility(state, cs, move));
             if (utility > bestUtility) {
                 bestUtility = utility;
                 bestMove = move;
