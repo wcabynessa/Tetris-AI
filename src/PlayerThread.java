@@ -19,14 +19,11 @@ public class PlayerThread extends Thread {
 
     private double computeUtility(AdvancedState oldState, AdvancedState newState, int move) {
         // Landing height is the height of the column where the piece is put
-        // Landing height = col height + 1/2 * piece height
         int piece = oldState.getNextPiece();
         int orient = oldState.legalMoves()[move][AdvancedState.ORIENT];
         int slot = oldState.legalMoves()[move][AdvancedState.SLOT];
         int pieceWidth = oldState.pWidth[piece][orient];
-        int pieceHeight = oldState.pHeight[piece][orient];
-        int colHeight = Utility.arrayMax(oldState.top, slot, slot + pieceWidth);
-        int landingHeight = colHeight + pieceHeight / 2;
+        int landingHeight = Utility.arrayMax(newState.top, slot, slot + pieceWidth);
 
         int rowsEliminated = newState.getRowsCleared() - oldState.getRowsCleared();
         int rowTransitions = newState.getRowTransitions();
@@ -40,6 +37,8 @@ public class PlayerThread extends Thread {
                         + weights[Constant.COL_TRANSITIONS] * colTransitions
                         + weights[Constant.NUM_HOLES] * numHoles
                         + weights[Constant.WELL_SUM] * wellSum;
+
+ 
         return utility;
     }
 
