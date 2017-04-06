@@ -31,6 +31,7 @@ public class TestWeights {
 
         //newState.printTop();
         //newState.printField();
+        System.out.println("Score: " + newState.getRowsCleared());
         System.out.println("Possible move: " +
                             landingHeight + " | " +
                             rowsEliminated + " | " +
