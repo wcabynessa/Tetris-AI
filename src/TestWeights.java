@@ -17,7 +17,7 @@ public class TestWeights {
         int landingHeight = Utility.arrayMax(newState.top, slot, slot + pieceWidth);
 
         int rowsEliminated = newState.getRowsCleared() - oldState.getRowsCleared();
-        int rowTransitions = newState.getRowTransitions();
+        int rowTransitions = newState.getBumpiness();
         int colTransitions = newState.getColTransitions();
         int numHoles = newState.getNumHoles();
         int wellSum = newState.getWellSum();
@@ -85,7 +85,7 @@ public class TestWeights {
 			s.draw();
 			s.drawNext(0,0);
 			try {
-                //sc.nextLine();
+                sc.nextLine();
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
