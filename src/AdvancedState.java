@@ -147,6 +147,10 @@ public class AdvancedState extends State {
         }
         return copy;
     }
+
+    public void setNextPiece(int nextPiece) {
+        this.nextPiece = nextPiece;
+    }
     
 
     public AdvancedState clone() {
