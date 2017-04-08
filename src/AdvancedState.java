@@ -5,14 +5,7 @@ import java.util.stream.IntStream;
 
 public class AdvancedState extends State {
 
-    private static int aggregateHeight = 0;
-    private static int numHoles = 0;
-    private static int bumpiness = 0;
-    private static int highestCol = 0;
-    private static int rowTransitions = 0;
-    private static int colTransitions = 0;
-    private static int wellSum = 0;
-    private static int randomSeed;
+    private int randomSeed;
     private Random rand;
 
     public AdvancedState(long randomSeed) {
@@ -21,12 +14,12 @@ public class AdvancedState extends State {
     }
     
     public int getAggregateHeight() {
-        aggregateHeight = IntStream.of(top).sum();
+        int aggregateHeight = IntStream.of(top).sum();
         return aggregateHeight;
     }
     
     public int getNumHoles() {
-        numHoles = 0;
+        int numHoles = 0;
         for (int j = 0;  j < COLS;  j++) {
             if (top[j] != 0) {
                 for (int i = top[j] - 1;  i >= 0;  i--) {
@@ -40,7 +33,7 @@ public class AdvancedState extends State {
     }
 
     public int getRowTransitions() {
-        rowTransitions = 0;
+        int rowTransitions = 0;
         cleanField();
         for (int i = 0;  i < ROWS;  i++) {
             // First and last non-empty cells
@@ -64,7 +57,7 @@ public class AdvancedState extends State {
     }
 
     public int getColTransitions() {
-        colTransitions = 0;
+        int colTransitions = 0;
         cleanField();
         for (int j = 0;  j < COLS;  j++) {
             for (int i = 0;  i < top[j] - 1;  i++) {
@@ -77,7 +70,7 @@ public class AdvancedState extends State {
     }
     
     public int getBumpiness() {
-        bumpiness = 0;
+        int bumpiness = 0;
         for (int i = 0; i < COLS - 1; i++) {
             bumpiness += Math.abs(top[i] - top[i + 1]);
         }
@@ -85,7 +78,7 @@ public class AdvancedState extends State {
     }
 
     public int getHighestColumn() {
-        highestCol = 0;
+        int highestCol = 0;
         for (int i = 0;  i < COLS;  i++) {
             highestCol = Math.max(highestCol, top[i]);
         }
@@ -93,8 +86,7 @@ public class AdvancedState extends State {
     }
 
     public int getWellSum() {
-        int next, prev;
-        wellSum = 0;
+        int next, prev, wellSum = 0;
         cleanField();
         for (int j = 0;  j < COLS;  j++) {
             next = (j == COLS - 1 ? ROWS : top[j + 1]);
