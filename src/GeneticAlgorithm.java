@@ -39,6 +39,8 @@ public class GeneticAlgorithm {
 
 	private static double[] GeneticSearch() {
         InitializePopulation();
+        refinePopulation();
+        saveToFile();
 
         for (int iteration = 0; iteration < Constant.NUMB_ITERATIONS; iteration++) {
             System.out.println("#------------------- Starting Iteration # + " + iteration + "-----------------------#");
