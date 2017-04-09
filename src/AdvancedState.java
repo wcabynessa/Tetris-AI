@@ -37,14 +37,7 @@ public class AdvancedState extends State {
         cleanField();
         for (int i = 0;  i < ROWS;  i++) {
             // First and last non-empty cells
-            int first = COLS, last = 0;
-            for (int j = 0;  j < COLS;  j++) {
-                if (field[i][j] != 0) {
-                    // Only assign the first time
-                    first = (first == COLS ? j : first);
-                    last = j;
-                }
-            }
+            int first = 0, last = COLS - 1;
             // Only count row transition between first and last
             // non-empty cells
             for (int j = first + 1;  j <= last;  j++) {

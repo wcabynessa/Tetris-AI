@@ -89,7 +89,9 @@ public class PlayerThread extends Thread {
                 continue;
             }
 
-            Utility.IntDoublePair utility = new Utility.IntDoublePair(0, computeUtility(state, cs, move, 0));
+            Utility.IntDoublePair utility = (state.getHighestColumn() > 15 ?
+                                                computeUtilityWithLookAhead(state, cs)
+                                                : new Utility.IntDoublePair(0, computeUtility(state, cs, move, 0)));
             if (utility.biggerThan(bestUtility)) {
                 bestUtility = utility;
                 bestMove = move;

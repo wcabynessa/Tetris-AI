@@ -29,7 +29,7 @@ public class GeneticAlgorithm {
                     out.print(w + " ");
                 }
                 out.println();
-		break;  // Only print one
+                index++;
             }
             out.close();
         } catch (Exception e) {
@@ -68,6 +68,16 @@ public class GeneticAlgorithm {
     /** Generate POPULATION_SIZE persons. */
     private static void InitializePopulation() {
 		population = new ArrayList<Person>();
+
+        // Adding elTetris
+        double[] weights = {
+            -4.500158825082766, 3.4181268101392694, -3.2178882868487753, -9.348695305445199, -7.899265427351652, -3.3855972247263626
+        };
+        Person elTetris = new Person(weights);
+        elTetris.updateFitness();
+        population.add(elTetris);
+
+        // Adding random
 		for (int i = 0;  i < Constant.POPULATION_SIZE;  i++) {
 			population.add(new Person());
 		}
@@ -88,19 +98,15 @@ public class GeneticAlgorithm {
 
 
     private static void expandPopulationByCrossOver() {
-        Vector subjects = new Vector<Integer>();	
-        while (subjects.size() < Constant.PERCENTAGE_CROSS_OVER * Constant.POPULATION_SIZE / 100) {
-            int subject = randomInt(Constant.POPULATION_SIZE);
-            if (!subjects.contains(subject)) {
-                subjects.add(subject);
+        Vector subjects = new Vector<Person>();	
+        for (int i = 0;  i < Constant.PERCENTAGE_CROSS_OVER * Constant.POPULATION_SIZE / 100;  i++) {
+            int subject1 = Utility.randomInt(population.size());
+            int subject2 = Utility.randomInt(population.size());
+            if (subject1 != subject2) {
+                subjects.add(Person.crossOver(population.get(subject1), population.get(subject2)));
             }
         }
-
-        for (int i = 0;  i < subjects.size();  i++) {
-            int subject1 = randomInt(subjects.size());
-            int subject2 = randomInt(subjects.size());
-            population.add(Person.crossOver(population.get(subject1), population.get(subject2)));
-        }
+        subjects.forEach(subject -> population.add((Person) subject));
 
         // Wait until all persons finish updating fitness
         ThreadController threadMaster = ThreadController.getInstance();
@@ -111,15 +117,15 @@ public class GeneticAlgorithm {
     private static void expandPopulationByMutation() {
         Vector subjects = new Vector<Integer>();	
         while (subjects.size() < Constant.PERCENTAGE_MUTATION * Constant.POPULATION_SIZE / 100) {
-            int subject = randomInt(Constant.POPULATION_SIZE);
+            int subject = Utility.randomInt(Constant.POPULATION_SIZE);
             if (!subjects.contains(subject)) {
                 subjects.add(subject);
             }
         }
 
         for (int i = 0;  i < subjects.size();  i++) {
-            int subject = randomInt(subjects.size());
-            int featureIndex = randomInt(Constant.NUMB_FEATURES);
+            int subject = Utility.randomInt(subjects.size());
+            int featureIndex = Utility.randomInt(Constant.NUMB_FEATURES);
 
             population.add(Person.mutate(population.get(subject), featureIndex));
         }
@@ -128,10 +134,6 @@ public class GeneticAlgorithm {
         ThreadController threadMaster = ThreadController.getInstance();
         threadMaster.waitFinishUpdate();
     }
-
-	public static int randomInt(int max) {
-		return (int) (Math.random() * max);
-	}
 }
 
 
@@ -156,7 +158,7 @@ class Person implements Comparable<Person> {
 	private void randomWeightVector() {
 		weights = new double[Constant.NUMB_FEATURES];
 		for (int i = 0; i < Constant.NUMB_FEATURES; i++) {
-			weights[i] = randomReal();
+			weights[i] = Utility.randomReal() * 10;
 		}
 	}
 
@@ -178,7 +180,7 @@ class Person implements Comparable<Person> {
 	public static Person crossOver(Person self, Person other) {
         double[] weights = Arrays.copyOf(self.weights, self.weights.length);
         for (int i = 0;  i < weights.length;  i++) {
-            if (Math.random() < 0.5) {
+            if (Utility.flipCoin()) {
                 weights[i] = other.weights[i];
             }
         }
@@ -188,15 +190,11 @@ class Person implements Comparable<Person> {
 	}
 
     /**
-     * Mutate a given person with delta in range [-0.2, 0.2]
+     * Mutate a given person with delta in range [-2, 2]
      */
 	public static Person mutate(Person self, int mutateLocation) {
         double[] weights = Arrays.copyOf(self.weights, self.weights.length);
-        if (Math.random() < 0.5) {
-            weights[mutateLocation] -= Math.random() / 5 * 10;
-        } else {
-            weights[mutateLocation] += Math.random() / 5 * 10;
-        }
+        weights[mutateLocation] += Utility.randomReal() * 2;
         Person child = new Person(weights);
         child.updateFitness();
         return child;
@@ -212,14 +210,6 @@ class Person implements Comparable<Person> {
 
     public double[] getWeights() {
         return weights;
-    }
-
-    public static double randomReal() {
-        if (Math.random() < 0.5) {
-            return Math.random() * 10;
-        } else {
-            return -Math.random() * 10;
-        }
     }
 
     public AtomicInteger getFitness() {

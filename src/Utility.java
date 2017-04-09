@@ -1,3 +1,4 @@
+import java.util.Random;
 
 public class Utility {
 
@@ -8,6 +9,24 @@ public class Utility {
             ans = Math.max(ans, arr[i]);
         }
         return ans;
+    }
+
+    public static int randomInt(int range) {
+        Random random = new Random();
+        return random.nextInt(range);
+    }
+
+    public static boolean flipCoin() {
+        return randomInt(2) == 0;
+    }
+
+    public static double randomReal() {
+        Random random = new Random();
+        if (flipCoin()) {
+            return random.nextDouble();
+        } else {
+            return -random.nextDouble();
+        }
     }
 
     public static class IntDoublePair {

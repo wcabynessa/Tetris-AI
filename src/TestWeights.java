@@ -111,6 +111,7 @@ public class TestWeights {
             s.draw();
             s.drawNext(0,0);
 			try {
+                //sc.nextLine();
 				Thread.sleep(1);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
