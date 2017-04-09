@@ -16,6 +16,12 @@ public class Constant {
     public static final int COL_TRANSITIONS = 4;
     public static final int WELL_SUM = 5;
 
+    // Indicates positive or negative features
+    // -1 means negative, should be minimized
+    public static final int[] FEATURE_TYPE = {
+        -1, 1, -1, -1, -1, -1
+    };
+
     // Random seeds must match number of games per update above ^
     public static final long[] SEEDS = {
         (new Random()).nextLong(),

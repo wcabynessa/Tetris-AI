@@ -162,7 +162,7 @@ class Person implements Comparable<Person> {
 	private void randomWeightVector() {
 		weights = new double[Constant.NUMB_FEATURES];
 		for (int i = 0; i < Constant.NUMB_FEATURES; i++) {
-			weights[i] = Utility.randomReal() * 10;
+			weights[i] = Math.abs(Utility.randomReal() * 10) * Constant.FEATURE_TYPE[i];
 		}
 	}
 
