@@ -70,12 +70,15 @@ public class GeneticAlgorithm {
 		population = new ArrayList<Person>();
 
         // Adding elTetris
-        double[] weights = {
-            -4.500158825082766, 3.4181268101392694, -3.2178882868487753, -9.348695305445199, -7.899265427351652, -3.3855972247263626
+        double[][] weightsSet = {
+            {-4.500158825082766, 3.4181268101392694, -3.2178882868487753, -9.348695305445199, -7.899265427351652, -3.3855972247263626},
+            {-11.510264256662655, -6.1299680439745385, -6.841537812857272, -5.620354098726366, -2.5994325668987317, -3.7832205990826324}
         };
-        Person elTetris = new Person(weights);
-        elTetris.updateFitness();
-        population.add(elTetris);
+        for (double[] weights : weightsSet) {
+            Person elTetris = new Person(weights);
+            elTetris.updateFitness();
+            population.add(elTetris);
+        }
 
         // Adding random
 		for (int i = 0;  i < Constant.POPULATION_SIZE;  i++) {
