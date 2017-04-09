@@ -17,9 +17,10 @@ public class GeneticAlgorithm {
 		}
 	}
 
-    private static void saveToFile() {
+    private static void saveToFile(int iteration) {
         try {
             PrintWriter out = new PrintWriter(new FileOutputStream("output.txt"));
+	    out.println(iteration);
             out.println("Best value: " + population.get(0).getFitness());
             out.println("Worst value: " + population.get(population.size() - 1).getFitness());
             int index = 0;
@@ -40,7 +41,7 @@ public class GeneticAlgorithm {
 	private static double[] GeneticSearch() {
         InitializePopulation();
         refinePopulation();
-        saveToFile();
+        saveToFile(-1);
 
         for (int iteration = 0; iteration < Constant.NUMB_ITERATIONS; iteration++) {
             System.out.println("#------------------- Starting Iteration # + " + iteration + "-----------------------#");
@@ -57,7 +58,7 @@ public class GeneticAlgorithm {
             }
             System.out.println();
 
-            saveToFile();
+            saveToFile(iteration);
         }
 
 		return population.get(0).weights;
