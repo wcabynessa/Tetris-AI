@@ -26,7 +26,7 @@ public class PlayerThread extends Thread {
         int landingHeight = Utility.arrayMax(newState.top, slot, slot + pieceWidth);
 
         int rowsEliminated = newState.getRowsCleared() - oldState.getRowsCleared() + rowsCleared;
-        int rowTransitions = newState.getBumpiness();
+        int rowTransitions = newState.getRowTransitions();
         int colTransitions = newState.getColTransitions();
         int numHoles = newState.getNumHoles();
         int wellSum = newState.getWellSum();

@@ -36,15 +36,13 @@ public class AdvancedState extends State {
         int rowTransitions = 0;
         cleanField();
         for (int i = 0;  i < ROWS;  i++) {
-            // First and last non-empty cells
-            int first = 0, last = COLS - 1;
-            // Only count row transition between first and last
-            // non-empty cells
-            for (int j = first + 1;  j <= last;  j++) {
+            for (int j = 1;  j < COLS;  j++) {
                 if ((field[i][j] == 0) != (field[i][j - 1] == 0)) {
                     rowTransitions++;
                 }
             }
+            if (field[i][0] == 0 && top[0] > i) rowTransitions++;
+            if (field[i][COLS - 1] == 0 && top[COLS - 1] > i) rowTransitions++;
         }
         return rowTransitions;
     }
@@ -53,11 +51,12 @@ public class AdvancedState extends State {
         int colTransitions = 0;
         cleanField();
         for (int j = 0;  j < COLS;  j++) {
-            for (int i = 0;  i < top[j] - 1;  i++) {
+            for (int i = 0;  i < top[j] - 2;  i++) {
                 if ((field[i][j] == 0) != (field[i + 1][j] == 0)) {
                     colTransitions++;
                 }
             }
+            if (field[i][j] == 0 && top[j] > 0) colTransitions++;
         }
         return colTransitions;
     }
@@ -85,10 +84,13 @@ public class AdvancedState extends State {
             next = (j == COLS - 1 ? ROWS : top[j + 1]);
             prev = (j == 0 ? ROWS : top[j - 1]);
             if (top[j] < Math.min(prev, next)) {
-                wellSum += Math.min(prev, next) - top[j];
+                int wellHeight = Math.min(prev, next) - top[j];
+                for (int t = 1;  t <= wellHeight;  t++) {
+                    wellSum += t;
+                }
             }
         }
-        return wellSum * 5;
+        return wellSum;
     }
 
     public void printTop() {
