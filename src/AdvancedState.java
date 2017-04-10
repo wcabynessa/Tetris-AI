@@ -56,7 +56,7 @@ public class AdvancedState extends State {
                     colTransitions++;
                 }
             }
-            if (field[i][j] == 0 && top[j] > 0) colTransitions++;
+            if (field[0][j] == 0 && top[j] > 0) colTransitions++;
         }
         return colTransitions;
     }
