@@ -34,15 +34,16 @@ public class AdvancedState extends State {
 
     public int getRowTransitions() {
         int rowTransitions = 0;
+        int lastCell = 1;
         cleanField();
         for (int i = 0;  i < ROWS;  i++) {
-            for (int j = 1;  j < COLS;  j++) {
-                if ((field[i][j] == 0) != (field[i][j - 1] == 0)) {
+            for (int j = 0;  j < COLS;  j++) {
+                if ((field[i][j] == 0) != (lastCell == 0)) {
                     rowTransitions++;
                 }
+                lastCell = field[i][j];
             }
-            if (field[i][0] == 0 && top[0] > i) rowTransitions++;
-            if (field[i][COLS - 1] == 0 && top[COLS - 1] > i) rowTransitions++;
+            if (lastCell == 0) rowTransitions++;
         }
         return rowTransitions;
     }
@@ -51,7 +52,7 @@ public class AdvancedState extends State {
         int colTransitions = 0;
         cleanField();
         for (int j = 0;  j < COLS;  j++) {
-            for (int i = 0;  i < top[j] - 2;  i++) {
+            for (int i = top[j] - 2;  i >= 0;  i--) {
                 if ((field[i][j] == 0) != (field[i + 1][j] == 0)) {
                     colTransitions++;
                 }
@@ -81,12 +82,16 @@ public class AdvancedState extends State {
         int next, prev, wellSum = 0;
         cleanField();
         for (int j = 0;  j < COLS;  j++) {
-            next = (j == COLS - 1 ? ROWS : top[j + 1]);
-            prev = (j == 0 ? ROWS : top[j - 1]);
-            if (top[j] < Math.min(prev, next)) {
-                int wellHeight = Math.min(prev, next) - top[j];
-                for (int t = 1;  t <= wellHeight;  t++) {
-                    wellSum += t;
+            for (int i = ROWS - 1;  i >= 0;  i--) {
+                if (field[i][j] == 0) {
+                    if (j == 0 || field[i][j - 1] != 0) {
+                        if (j == COLS - 1 || field[i][j + 1] != 0) {
+                            int wellHeight = i - top[j] + 1;
+                            wellSum += wellHeight * (wellHeight + 1) / 2;
+                        }
+                    }
+                } else {
+                    break;
                 }
             }
         }

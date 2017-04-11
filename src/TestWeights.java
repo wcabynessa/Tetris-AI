@@ -14,7 +14,8 @@ public class TestWeights {
         int orient = oldState.legalMoves()[move][AdvancedState.ORIENT];
         int slot = oldState.legalMoves()[move][AdvancedState.SLOT];
         int pieceWidth = oldState.pWidth[piece][orient];
-        int landingHeight = Utility.arrayMax(newState.top, slot, slot + pieceWidth);
+        int pieceHeight = oldState.pHeight[piece][orient];
+        int landingHeight = Utility.arrayMax(oldState.top, slot, slot + pieceWidth) + pieceHeight / 2;
 
         int rowsEliminated = newState.getRowsCleared() - oldState.getRowsCleared() + rowsCleared;
         int rowTransitions = newState.getRowTransitions();
@@ -28,6 +29,13 @@ public class TestWeights {
                         + weights[Constant.COL_TRANSITIONS] * colTransitions
                         + weights[Constant.NUM_HOLES] * numHoles
                         + weights[Constant.WELL_SUM] * wellSum;
+        System.out.println("Possible: " + move + ">" + utility + " - "
+                            + landingHeight + "|"
+                            + rowsEliminated + "|"
+                            + rowTransitions + "|"
+                            + colTransitions + "|"
+                            + numHoles + "|"
+                            + wellSum + "|");
  
         return utility;
     }
@@ -89,7 +97,7 @@ public class TestWeights {
                 bestMove = move;
             }
         }
-        System.out.println("Found best move: " + legalMoves[bestMove][0] + " - " + legalMoves[bestMove][1] + bestUtility.second);
+        System.out.println("Found best move: " + bestMove + ">" + legalMoves[bestMove][0] + " - " + legalMoves[bestMove][1] + bestUtility.second);
         return bestMove;
 	}
 	

@@ -23,7 +23,8 @@ public class PlayerThread extends Thread {
         int orient = oldState.legalMoves()[move][AdvancedState.ORIENT];
         int slot = oldState.legalMoves()[move][AdvancedState.SLOT];
         int pieceWidth = oldState.pWidth[piece][orient];
-        int landingHeight = Utility.arrayMax(newState.top, slot, slot + pieceWidth);
+        int pieceHeight = oldState.pHeight[piece][orient];
+        int landingHeight = Utility.arrayMax(oldState.top, slot, slot + pieceWidth) + pieceHeight / 2;
 
         int rowsEliminated = newState.getRowsCleared() - oldState.getRowsCleared() + rowsCleared;
         int rowTransitions = newState.getRowTransitions();
@@ -89,7 +90,7 @@ public class PlayerThread extends Thread {
                 continue;
             }
 
-            Utility.IntDoublePair utility = (state.getHighestColumn() > 15 ?
+            Utility.IntDoublePair utility = (state.getHighestColumn() > 10 ?
                                                 computeUtilityWithLookAhead(state, cs)
                                                 : new Utility.IntDoublePair(0, computeUtility(state, cs, move, 0)));
             if (utility.biggerThan(bestUtility)) {
@@ -127,6 +128,7 @@ public class PlayerThread extends Thread {
                 totalRowsCleared = s.getRowsCleared();
             }
             valueToUpdate.updateValue(totalRowsCleared);
+            System.out.println("Finished: " + totalRowsCleared);
         } catch (Exception e) {
             System.out.println("ERROR: Thread failed to update fitness value");
             e.printStackTrace();

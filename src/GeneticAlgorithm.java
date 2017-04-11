@@ -72,12 +72,7 @@ public class GeneticAlgorithm {
 
         // Adding elTetris
         double[][] weightsSet = {
-            {-4.500158825082766, 3.4181268101392694, -3.2178882868487753, -9.348695305445199, -7.899265427351652, -3.3855972247263626},
-            {-11.510264256662655, -6.1299680439745385, -6.841537812857272, -5.620354098726366, -2.5994325668987317, -3.7832205990826324},
-            {-5.218125094568532, 4.555119863760868, -5.856083038000559, -5.775887397314063, 2.8397607671324576, -3.3500264019858674},
-            {-10.764300149540853, 2.315927221263582, -5.856083038000559, -5.620354098726366, -8.001521187545805, -3.7832205990826324},
-            {-10.764300149540853, 1.9487163176732272, -5.856083038000559, -5.620354098726366, -8.001521187545805, -3.7832205990826324},
-            {-6.637850133377855, 4.555119863760868, -5.856083038000559, -7.56491850423325, -6.512389120451285, -3.3500264019858674},
+            {-4.500158825082766, 3.4181268101392694, -3.2178882868487753, -9.348695305445199, -7.899265427351652, -3.3855972247263626}
         };
         for (double[] weights : weightsSet) {
             Person elTetris = new Person(weights);
@@ -85,14 +80,15 @@ public class GeneticAlgorithm {
             population.add(elTetris);
         }
 
+        // Wait until all persons finish updating fitness
+        ThreadController threadMaster = ThreadController.getInstance();
+        threadMaster.waitFinishUpdate();
+        System.exit(1);
+
         // Adding random
 		for (int i = 0;  i < Constant.POPULATION_SIZE;  i++) {
 			population.add(new Person());
 		}
-
-        // Wait until all persons finish updating fitness
-        ThreadController threadMaster = ThreadController.getInstance();
-        threadMaster.waitFinishUpdate();
     }
 
 
