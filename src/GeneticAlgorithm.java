@@ -80,15 +80,14 @@ public class GeneticAlgorithm {
             population.add(elTetris);
         }
 
-        // Wait until all persons finish updating fitness
-        ThreadController threadMaster = ThreadController.getInstance();
-        threadMaster.waitFinishUpdate();
-        System.exit(1);
-
         // Adding random
 		for (int i = 0;  i < Constant.POPULATION_SIZE;  i++) {
 			population.add(new Person());
 		}
+
+        // Wait until all persons finish updating fitness
+        ThreadController threadMaster = ThreadController.getInstance();
+        threadMaster.waitFinishUpdate();
     }
 
 
