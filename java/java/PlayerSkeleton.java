@@ -5,7 +5,7 @@ import java.util.Arrays;
 public class PlayerSkeleton {
 
     private static final double[] weights = {
-        -4.500158825082766, 3.4181268101392694, -3.2178882868487753, -9.348695305445199, -7.899265427351652, -3.3855972247263626
+        -4.4406549693496835, 2.940075919749343, -3.061509929466729, -8.334616452961026, -7.015572468226395, -3.853156643203179 
     };
 
     /**
@@ -126,7 +126,7 @@ public class PlayerSkeleton {
 			s.drawNext(0,0);
 			try {
                 //sc.nextLine();
-				Thread.sleep(1);
+				Thread.sleep(300);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
