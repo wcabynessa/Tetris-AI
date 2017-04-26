@@ -33,13 +33,13 @@ public class PlayerSkeleton {
                         + weights[Constant.COL_TRANSITIONS] * colTransitions
                         + weights[Constant.NUM_HOLES] * numHoles
                         + weights[Constant.WELL_SUM] * wellSum;
-        System.out.println("Possible moves: " + utility + "|"
+        /*System.out.println("Possible moves: " + utility + "|"
                             + landingHeight + "|"
                             + rowsEliminated + "|"
                             + rowTransitions + "|"
                             + colTransitions + "|"
                             + numHoles + "|"
-                            + wellSum + "|");
+                            + wellSum + "|");*/
         return utility;
     }
 
@@ -86,7 +86,7 @@ public class PlayerSkeleton {
 	private int pickMove(State originalState, int[][] legalMoves) {
         // Create a Advanced Clone of originalState
         AdvancedState state = new AdvancedState(originalState);
-        System.out.println(state.legalMoves().length + " - " + legalMoves.length);
+        //System.out.println(state.legalMoves().length + " - " + legalMoves.length);
 
         Utility.IntDoublePair bestUtility = new Utility.IntDoublePair(-Integer.MAX_VALUE, -Double.MAX_VALUE);
         int bestMove = 0;
@@ -108,9 +108,9 @@ public class PlayerSkeleton {
                 bestMove = move;
             }
         }
-        System.out.println("Picked move: " + bestMove + " with utility: " + bestUtility.second);
+        /*System.out.println("Picked move: " + bestMove + " with utility: " + bestUtility.second);
         System.out.println();
-        System.out.println(state.getRowsCleared());
+        System.out.println(state.getRowsCleared());*/
         return bestMove;
 	}
 	
