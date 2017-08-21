@@ -8,5 +8,5 @@ The AI is capable of scoring millions of lines given random sequence of pieces. 
 
 ### Commands
 
-To run Tetris emulator: ./runtest.sh  
-To run Genetic Algorithm: ./run.sh
+To run Tetris emulator: `./runtest.sh`  
+To run Genetic Algorithm: `./run.sh`
